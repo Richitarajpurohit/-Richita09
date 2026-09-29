@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ComicCraft - Your comic</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Comic+Neue:wght@400;700&display=swap">
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+  <main class="page">
+    <header class="masthead">
+      <h1>Your comic</h1>
+    </header>
+
+    {% for panel in layout %}
+    <article class="panel card">
+      <h2>Panel {{ panel.panel }}: {{ panel.title }}</h2>
+      <img src="{{ panel.image_url }}" alt="Illustration for panel {{ panel.panel }}: {{ panel.title }}" width="512" height="512">
+      <div class="text">
+        {% if panel.scene_description %}<p class="scene">{{ panel.scene_description }}</p>{% endif %}
+        {% if panel.caption %}<p class="caption">{{ panel.caption }}</p>{% endif %}
+        {% if panel.narration %}<p class="narration">{{ panel.narration }}</p>{% endif %}
+        {% if panel.dialogue %}
+        <ul class="dialogue">
+          {% for line in panel.dialogue %}<li>{{ line }}</li>{% endfor %}
+        </ul>
+        {% endif %}
+      </div>
+    </article>
+    {% endfor %}
+
+    <div class="actions">
+      <a id="download" class="btn" href="/download/{{ pdf_filename }}" download>Download comic as PDF</a>
+      <a class="btn" href="/">Make another comic</a>
+    </div>
+  </main>
+
+  <script>
+    // After the download starts, show the confirmation page.
+    document.getElementById("download").addEventListener("click", function () {
+      setTimeout(function () {
+        window.location.href = "/export-success?pdf_path={{ pdf_path | urlencode }}";
+      }, 1500);
+    });
+  </script>
+</body>
+</html>

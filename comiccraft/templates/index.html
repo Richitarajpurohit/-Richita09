@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ComicCraft - Create your comic</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Comic+Neue:wght@400;700&display=swap">
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+  <main class="page narrow">
+    <header class="masthead">
+      <h1>ComicCraft</h1>
+      <p>Describe your story. Get a five-panel comic and a PDF.</p>
+    </header>
+
+    <form id="comic-form" class="card" action="/generate" method="post">
+      {% if error %}<div class="error" role="alert">{{ error }}</div>{% endif %}
+
+      <label for="prompt">Story prompt</label>
+      <textarea id="prompt" name="prompt" required minlength="3">{{ form.prompt or "A brave fox exploring an enchanted forest." }}</textarea>
+
+      <label for="character_name">Main character name</label>
+      <input id="character_name" name="character_name" type="text" required value="{{ form.character_name or 'Finn' }}">
+
+      <label for="setting">Setting</label>
+      <select id="setting" name="setting">
+        {% for opt in ["forest", "school", "space", "city"] %}
+        <option value="{{ opt }}" {% if (form.setting or "forest") == opt %}selected{% endif %}>{{ opt | capitalize }}</option>
+        {% endfor %}
+      </select>
+
+      <label for="tone">Story tone</label>
+      <select id="tone" name="tone">
+        {% for opt in ["dramatic", "light-hearted", "poetic", "funny"] %}
+        <option value="{{ opt }}" {% if (form.tone or "dramatic") == opt %}selected{% endif %}>{{ opt | capitalize }}</option>
+        {% endfor %}
+      </select>
+
+      <label for="style">Art style</label>
+      <select id="style" name="style">
+        {% for opt in ["comic book", "anime", "pixel art", "realistic"] %}
+        <option value="{{ opt }}" {% if (form.style or "comic book") == opt %}selected{% endif %}>{{ opt | capitalize }}</option>
+        {% endfor %}
+      </select>
+
+      <button id="submit-btn" class="btn block" type="submit">Generate comic</button>
+    </form>
+  </main>
+
+  <div id="overlay" class="overlay" role="status" aria-live="polite">
+    <div class="spinner" aria-hidden="true"></div>
+    <h2>Drawing your comic</h2>
+    <p>Writing the story and painting five panels. This takes a minute or two with a GPU and can take several minutes on a CPU.</p>
+  </div>
+
+  <script>
+    var form = document.getElementById("comic-form");
+    var overlay = document.getElementById("overlay");
+    var btn = document.getElementById("submit-btn");
+    form.addEventListener("submit", function () {
+      overlay.classList.add("show");
+      btn.disabled = true;
+    });
+    window.addEventListener("pageshow", function () {   // returning via the back button
+      overlay.classList.remove("show");
+      btn.disabled = false;
+    });
+  </script>
+</body>
+</html>
